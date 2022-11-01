@@ -13,21 +13,39 @@ async function getPosts() {
 
 // ====== REST SERVICE END ====== //
 
-// ====== EVENTS ====== ("controller+view") //
-
-function appendPosts(postList) {
-    // todo: DOM manipulation
+// === READ (GET) === //
+// get all posts
+function getPosts() {
+    fetch(endpoint + "/posts")
+        .then(function (res) {
+            return res.json();
+        })
+        .then(function (data) {
+            appendPosts(data);
+        });
 }
 
-// ========= EVENTS END ====== //
+// ====== REST SERVICE END ====== //
+
+// appends posts to the DOM
+function appendPosts(postList) {
+    console.log(postList);
+
+    for (let index = 0; index < postList.length; index++) {
+        const post = postList[index];
+        console.log(post);
+
+        document.querySelector("#posts-grid").innerHTML += /*html*/ `
+            <article>
+                <img src="${post.image}">
+                <h2>${post.title}</h2>
+                <p>${post.body}</p>
+            </article>
+        `;
+    }
+}
 
 // === INITIALIZE APP === //
-
-async function initApp() {
-    const posts = await getPosts();
-    console.log(posts);
-}
-
-initApp();
+getPosts();
 
 // ====== INITIALIZE APP END ====== //
