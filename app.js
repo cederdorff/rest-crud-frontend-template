@@ -5,16 +5,6 @@ const endpoint = isLocalhost ? "http://localhost:3000" : serverUrl;
 
 // === READ (GET) === //
 // get all posts
-async function getPosts() {
-    const res = await fetch(`${endpoint}/posts`);
-    const posts = await res.json();
-    return posts;
-}
-
-// ====== REST SERVICE END ====== //
-
-// === READ (GET) === //
-// get all posts
 function getPosts() {
     fetch(endpoint + "/posts")
         .then(function (res) {
@@ -25,17 +15,14 @@ function getPosts() {
         });
 }
 
-// ====== REST SERVICE END ====== //
-
 // appends posts to the DOM
 function appendPosts(postList) {
-    console.log(postList);
+    let html = "";
 
     for (let index = 0; index < postList.length; index++) {
         const post = postList[index];
-        console.log(post);
 
-        document.querySelector("#posts-grid").innerHTML += /*html*/ `
+        html += /*html*/ `
             <article>
                 <img src="${post.image}">
                 <h2>${post.title}</h2>
@@ -43,6 +30,7 @@ function appendPosts(postList) {
             </article>
         `;
     }
+    document.querySelector("#posts-grid").insertAdjacentHTML("afterbegin", html);
 }
 
 // === INITIALIZE APP === //
