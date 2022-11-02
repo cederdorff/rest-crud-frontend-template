@@ -12,7 +12,18 @@ function getPosts() {
             return res.json();
         })
         .then(function (data) {
+            console.log(data);
             appendPosts(data);
+        });
+}
+
+function getPost(id) {
+    fetch(`${endpoint}/posts/${id}`)
+        .then(function (res) {
+            return res.json();
+        })
+        .then(function (data) {
+            displayPost(data);
         });
 }
 
@@ -29,32 +40,81 @@ function appendPosts(postList) {
                 <h2>${post.title}</h2>
                 <p>${post.body}</p>
                 <div class="btns">
-                    <button class="btn-update-user" onclick="getPost(${post.id})">Update</button>
-                    <button class="btn-delete-user" data-id="${post.id}">Delete</button>
+                    <button class="btn-update-user" onclick="getPost('${post.id}')">Update</button>
+                    <button class="btn-delete-user" onclick="deletePost('${post.id}')">Delete</button>
                 </div>
             </article>
         `;
     }
-    document.querySelector("#posts-grid").insertAdjacentHTML("afterbegin", html);
+    console.log(html);
+    document.querySelector("#posts-grid").innerHTML = html;
 }
 
-function getPost(id) {
-    fetch(`${endpoint}/posts/${id}`)
-        .then(function (res) {
-            return res.json();
+function deletePost(id) {
+    fetch(endpoint + "/posts/" + id, { method: "DELETE" })
+        .then(function (response) {
+            return response.json();
         })
-        .then(function (data) {
-            displayPost(data);
+        .then(function (users) {
+            console.log(users);
+            appendPosts(users);
+        });
+}
+
+function createPost(event) {
+    event.preventDefault();
+    const post = {
+        title: event.target.title.value,
+        body: event.target.body.value,
+        image: event.target.url.value
+    };
+
+    fetch(endpoint + "/posts", {
+        method: "POST",
+        body: JSON.stringify(post),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (posts) {
+            console.log(posts);
+            appendPosts(posts);
         });
 }
 
 function displayPost(post) {
-    console.log(post);
+    selectedPostId = post.id;
     const form = document.querySelector("#form-update");
     form.title.value = post.title;
     form.body.value = post.body;
     form.url.value = post.image;
     form.scrollIntoView({ behavior: "smooth" });
+}
+
+function updatePost(event) {
+    event.preventDefault();
+    const postToUpdate = {
+        title: event.target.title.value,
+        body: event.target.body.value,
+        image: event.target.url.value
+    };
+    fetch(endpoint + "/posts/" + selectedPostId, {
+        method: "PUT",
+        body: JSON.stringify(postToUpdate),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (posts) {
+            console.log(posts);
+            appendPosts(posts);
+        });
 }
 
 // === INITIALIZE APP === //
